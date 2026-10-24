@@ -1,29 +1,54 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eff2f4">
+<meta name="description" content="EFI Web: análise local de evolução física e importação privada, com operação offline.">
 
-<meta name="theme-color" content="#eef3f5"/>
-<title>EvoluFísico Intelligence · Análise Especializada</title>
+
 <style>
 :root{color-scheme:light;--bg:#eff2f4;--surface:#fff;--surface2:#f7f9fa;--ink:#1d2731;--muted:#63717e;--line:#d9e1e6;--accent:#176a62;--accent-soft:#e9f4f0;--warn:#8c6023;--warn-bg:#fff6e7;--radius:10px}
 html[data-theme="dark"]{color-scheme:dark;--bg:#121820;--surface:#1b2630;--surface2:#222f3a;--ink:#eff4f7;--muted:#abbdc9;--line:#344550;--accent:#74d2be;--accent-soft:#203d3b;--warn:#edc17b;--warn-bg:#3a3127}
 *{box-sizing:border-box}html{font:14px/1.48 system-ui,-apple-system,"Segoe UI",Arial,sans-serif}body{margin:0;background:var(--bg);color:var(--ink)}button,select{font:inherit}.shell{max-width:1280px;margin:0 auto;padding:22px 28px 60px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:39px}.brand{display:flex;align-items:center;gap:11px}.brand strong{display:block;font-size:15px;font-weight:750;letter-spacing:-.03em}.brand small{display:block;letter-spacing:.13em;color:var(--muted);font-size:9px;font-weight:800;margin-top:2px}.mark{display:grid;place-items:center;width:42px;height:42px;border-radius:9px;color:white;background:#1c655c;font-weight:750;letter-spacing:-.08em}.theme{border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);padding:8px 14px;cursor:pointer}.intro{display:flex;align-items:start;justify-content:space-between;gap:16px;margin-bottom:26px}.eyebrow{color:var(--accent);font-size:10px;font-weight:800;letter-spacing:.16em}h1{font-size:clamp(25px,3vw,36px);line-height:1.13;letter-spacing:-.045em;margin:9px 0 10px}h2{font-size:17px;letter-spacing:-.03em;margin:0 0 11px}p{margin:0;color:var(--muted)}.intro p{max-width:700px}.label{flex-shrink:0;border:1px solid var(--line);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--muted);background:var(--surface)}.card{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:21px}.controls{display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:20px;margin-bottom:22px}.controls label{display:block;font-weight:680;margin-bottom:7px}.controls select{width:100%;background:var(--surface2);color:var(--ink);padding:10px;border:1px solid var(--line);border-radius:7px}.controls small{display:block;color:var(--muted);margin-top:8px;font-size:11px}.primary{background:var(--accent);color:white;border:0;border-radius:8px;padding:11px 19px;cursor:pointer;font-weight:680;min-height:42px}html[data-theme="dark"] .primary{color:#102421}.results{display:grid;gap:19px}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.heading p{font-size:12px}.status{font-size:12px;color:var(--accent);font-weight:700}.summary{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 7px 7px 0;margin-top:15px;color:var(--ink)}.metricgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.metric{min-width:0}.metric .tag{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}.metric .value{font-size:23px;font-weight:750;letter-spacing:-.05em;margin:5px 0}.metric .delta{font-weight:700}.metric .detail{font-size:11px;margin-top:11px}.metric .mini{margin-top:10px;font-size:11px;color:var(--muted)}.muted{color:var(--muted)}.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}.charthead{display:flex;justify-content:space-between;gap:10px;align-items:center}.charthead small{color:var(--muted)}svg.chart{display:block;width:100%;height:auto;max-height:180px;margin-top:13px}.chart path{stroke:var(--accent);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;fill:none}.chart circle{fill:var(--accent);stroke:var(--surface);stroke-width:2}.chart .gridline{stroke:var(--line);stroke-width:1}.chart text{fill:var(--muted);font-size:9px}.alerts{display:grid;gap:9px}.alert{border-radius:8px;border:1px solid var(--line);padding:13px 15px;background:var(--surface2);font-size:12px}.alert.attention,.alert.blocked{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn) 30%,var(--line))}.alert b{display:block;font-size:12px;margin-bottom:4px}.alert p{font-size:12px}.footnotes{margin-top:12px}.footnotes li{color:var(--muted);margin-top:5px}.legal{text-align:center;font-size:11px;color:var(--muted);padding:23px 5px}.copy{background:var(--surface2);color:var(--ink);border:1px solid var(--line);padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px}
 @media(max-width:900px){.metricgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{grid-template-columns:1fr 1fr}.controls .primary{grid-column:1/-1}}@media(max-width:620px){.shell{padding:16px 13px 42px}.topbar{margin-bottom:25px}.intro{display:block}.label{display:inline-flex;margin-top:12px}.controls{grid-template-columns:1fr;gap:14px}.controls .primary{grid-column:auto}.metricgrid,.charts{grid-template-columns:1fr}.card{padding:16px}.heading{align-items:start;flex-direction:column}.brand strong{font-size:14px}}
 @media print{.controls,.topbar .theme,.copy,.legal{display:none!important}.shell{max-width:none;padding:0}.card{break-inside:avoid}body{background:white;color:#111}}
+/* RC2 — entrada local e adaptação visual */
+.top-actions{display:flex;align-items:center;gap:13px;flex-wrap:wrap}.network{font-size:11px;color:var(--muted)}.network[data-online="false"]{color:var(--warn)}
+.workspace{margin-bottom:18px;display:grid;gap:14px}.workspace h2{margin:4px 0 5px}.workspace-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.action,.secondary,.danger{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);padding:10px 13px;border-radius:7px;background:var(--surface2);color:var(--ink);font-weight:650;font-size:12px;cursor:pointer;text-decoration:none}.action{background:var(--accent-soft);border-color:var(--accent)}.danger{color:var(--warn)}.import-note{font-size:12px;border-top:1px solid var(--line);padding-top:11px}.import-note[data-error="true"]{color:var(--warn)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none!important}
+@media(max-width:620px){.top-actions{justify-content:flex-end}.brand small{letter-spacing:.05em}.workspace-actions>*{width:100%}.network{display:none}}
+@media print{.workspace,.top-actions,.controls{display:none!important}}
 
 </style>
+<title>EFI Web — EvoluFísico Intelligence</title>
 </head>
 <body>
 <div class="shell">
-  <header class="topbar"><div class="brand"><span class="mark">EF</span><div><strong>EvoluFísico Intelligence</strong><small>ANÁLISE ESPECIALIZADA · RC1.1</small></div></div><button class="theme" id="theme" type="button" aria-label="Alternar modo claro e escuro">◐ <span>Tema</span></button></header>
-  <main>
-    <div class="intro"><div><div class="eyebrow">EFI / LABORATÓRIO EXPERIMENTAL</div><h1>Inteligência aplicada à evolução física</h1><p>Interpretação local, verificável e fundamentada nas medições. Nenhum dado é enviado a servidores.</p></div><div class="label">Demonstração local · arquivo único</div></div>
-    <section class="controls card" aria-label="Seleção de perfil"><div><label for="profile">Aluno demonstrativo</label><select id="profile"></select><small>Todos os perfis têm no mínimo três avaliações distintas.</small></div><div><label for="goal">Objetivo do acompanhamento</label><select id="goal"><option value="acompanhar">Acompanhar evolução</option><option value="reduzir-cintura">Reduzir cintura</option><option value="reduzir-gordura">Reduzir gordura</option><option value="aumentar-massa-livre">Aumentar massa livre</option></select><small>A meta só muda os alertas descritivos.</small></div><button type="button" id="analyze" class="primary">Analisar evolução</button></section>
-    <div class="results" id="results" aria-live="polite"><p>Selecione um perfil e execute a análise.</p></div>
-    <div class="legal">Motor analítico determinístico · Sem modelo de linguagem · Não constitui diagnóstico médico, prescrição de exercícios ou garantia de acurácia clínica. Revisão do profissional obrigatória.</div>
-  </main>
+<header class="topbar">
+ <div class="brand"><span class="mark">EF</span><div><strong>EvoluFísico Intelligence</strong><small>EFI WEB · RC2 · PROCESSAMENTO LOCAL</small></div></div>
+ <div class="top-actions"><span class="network" id="connection" role="status">Verificando conexão</span><button class="theme" id="theme" type="button">◐ Tema</button></div>
+</header>
+<main>
+ <div class="intro"><div><div class="eyebrow">EFI / LABORATÓRIO INDEPENDENTE</div><h1>Inteligência aplicada à evolução física</h1><p>Análises rastreáveis, revisáveis e executadas no dispositivo. Sem transmissão de avaliações para servidores.</p></div><span class="label">Versão experimental RC2</span></div>
+ <section class="workspace card" aria-label="Origem de dados">
+  <div><div class="eyebrow">DADOS DE ENTRADA</div><h2>Trabalhar com avaliações</h2><p>Comece com exemplos ou abra um arquivo JSON padronizado. Importações ficam somente na memória da página e serão descartadas quando ela for fechada.</p></div>
+  <div class="workspace-actions">
+   <label class="action" for="file">Importar avaliações JSON<input id="file" type="file" accept=".json,application/json" hidden></label>
+   <button id="sample" class="secondary" type="button">Baixar modelo JSON</button>
+   <button id="clear" class="danger" type="button" hidden>Descartar importação</button>
+  </div>
+  <p class="import-note" id="import-status" role="status" aria-live="polite">Exemplos demonstrativos carregados. Nenhum aluno real foi importado.</p>
+ </section>
+ <section class="controls card" aria-label="Configurar análise">
+  <div><label for="profile">Perfil para análise</label><select id="profile"></select><small id="source-info">Históricos sintéticos para demonstração.</small></div>
+  <div><label for="goal">Objetivo registrado</label><select id="goal"><option value="acompanhar">Acompanhar evolução</option><option value="reduzir-cintura">Reduzir cintura</option><option value="reduzir-gordura">Reduzir gordura estimada</option><option value="aumentar-massa-livre">Aumentar massa livre de gordura</option></select><small>A meta orienta alertas, não substitui avaliação profissional.</small></div>
+  <button type="button" id="analyze" class="primary">Analisar evolução</button>
+ </section>
+ <div class="results" id="results" aria-live="polite"></div>
+ <footer class="legal"><p>Inteligência analítica determinística · Não é modelo de linguagem nem diagnóstico médico · A interpretação exige revisão profissional.</p><p id="offline-status">Modo offline disponível após instalação dos recursos, em uma origem HTTPS compatível. O HTML único também abre sem rede.</p></footer>
+</main>
 </div>
 <script>
 /**
@@ -188,36 +213,170 @@ const examples=[
     entry('m5','ALUNO-DEMO-03','2026-05-10',76.6,86.9,28.4,54.8,bia)]}
 ];
 
+/** EFI Web RC2 — strict, offline-only import contract. No network or persistence. */
+const IMPORT_SCHEMA = 'efi.import.v1';
+const MAX_FILE_BYTES = 1024 * 1024;
+const MAX_PROFILES = 100;
+const MAX_RECORDS = 500;
+const GOALS = Object.freeze(['acompanhar','reduzir-cintura','reduzir-gordura','aumentar-massa-livre']);
+const IMPORT_METRICS = Object.freeze(['weightKg','waistCm','bodyFatPct','leanMassKg']);
+const validId = value => typeof value === 'string' && value.trim().length >= 1 && value.trim().length <= 100 && !/[\u0000-\u001f\u007f]/.test(value);
+const isRecord = x => x !== null && typeof x === 'object' && !Array.isArray(x);
+class ImportErrorEFI extends Error {
+  constructor(code, description) { super(description); this.name = 'ImportErrorEFI'; this.code = code; }
+}
+function reject(code, description) { throw new ImportErrorEFI(code, description); }
+function str(value, limit = 150) { return typeof value === 'string' ? value.trim().slice(0, limit) : ''; }
+function method(value) {
+  if (!isRecord(value)) return null;
+  return {type:str(value.type,80), device:str(value.device,80), protocol:str(value.protocol,80), version:str(value.version,40)};
+}
+function normalizeImport(payload) {
+  if (!isRecord(payload) || payload.schemaVersion !== IMPORT_SCHEMA) reject('SCHEMA', 'Formato incompatível. Utilize efi.import.v1.');
+  if (!Array.isArray(payload.profiles) || !payload.profiles.length || payload.profiles.length > MAX_PROFILES)
+    reject('PROFILES', 'O arquivo deve conter entre 1 e 100 perfis.');
+  const seenProfiles = new Set();
+  const profiles = payload.profiles.map((p, pindex) => {
+    if (!isRecord(p) || !validId(p.profileId)) reject('PROFILE_ID', `Identificador do perfil ${pindex + 1} inválido.`);
+    const id = p.profileId.trim();
+    if (seenProfiles.has(id)) reject('DUPLICATE_PROFILE', 'O arquivo contém perfis com identificadores repetidos.');
+    seenProfiles.add(id);
+    if (!Array.isArray(p.assessments) || !p.assessments.length || p.assessments.length > MAX_RECORDS)
+      reject('ASSESSMENTS', `O perfil ${id} deve conter entre 1 e 500 avaliações.`);
+    const ids = new Set(), dates = new Set();
+    const assessments = p.assessments.map((a, index) => {
+      if (!isRecord(a) || !validId(a.id) || !isRecord(a.metrics) || typeof a.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(a.date))
+        reject('RECORD', `A avaliação ${index + 1} de ${id} tem campos obrigatórios inválidos.`);
+      if (a.studentId !== id) reject('IDENTITY', `A avaliação ${index + 1} não pertence ao perfil ${id}.`);
+      if (ids.has(a.id) || dates.has(a.date)) reject('DUPLICATE', `Datas ou identificadores duplicados em ${id}.`);
+      ids.add(a.id); dates.add(a.date);
+      const metrics = {}, methods = {};
+      for (const key of IMPORT_METRICS) {
+        const v = a.metrics[key];
+        if (v !== null && v !== undefined && v !== '' && typeof v !== 'number' && typeof v !== 'string')
+          reject('METRIC_TYPE', `Tipo de medida inválido: ${key}, perfil ${id}.`);
+        metrics[key] = v ?? null;
+      }
+      for (const key of ['bodyFatPct','leanMassKg']) methods[key] = method(a.methods?.[key]);
+      return {id:a.id.trim(),studentId:id,date:a.date,metrics,methods};
+    });
+    return {profileId:id,name:str(p.name,100) || `Aluno ${pindex + 1}`,goal:GOALS.includes(p.goal)?p.goal:'acompanhar',source:'importacao-local',assessments};
+  });
+  return {schemaVersion:IMPORT_SCHEMA,profiles};
+}
+function parseImportText(text) {
+  if (typeof text !== 'string' || new TextEncoder().encode(text).byteLength > MAX_FILE_BYTES) reject('FILE_SIZE','O arquivo excede 1 MB.');
+  let raw;
+  try { raw = JSON.parse(text); } catch { reject('JSON','O arquivo não é um JSON válido.'); }
+  return normalizeImport(raw);
+}
+function exampleImport(profile) {
+  // Clearly identified synthetic data; helps the professional prepare manual imports.
+  return {schemaVersion:IMPORT_SCHEMA,profiles:[{
+    profileId:profile.profileId,name:profile.name,goal:profile.goal,
+    assessments:profile.assessments.map(a=>({id:a.id,studentId:a.studentId,date:a.date,metrics:{...a.metrics},methods:{bodyFatPct:{...a.methods?.bodyFatPct},leanMassKg:{...a.methods?.leanMassKg}}}))
+  }]};
+}
 
 
-const $=id=>document.getElementById(id);
-const h=(tag,className='',text='')=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=String(text);return el};
-const fmtNumber=n=>typeof n==='number'&&Number.isFinite(n)?new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n):'—';
+
+
+const $ = id => document.getElementById(id);
+const element = (tag, className='', content='') => {
+  const node=document.createElement(tag);if(className)node.className=className;
+  node.textContent=String(content);return node;
+};
+const fmt = n => Number.isFinite(n)?new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n):'—';
+let imported=[];
+let profiles=[...examples];
+let current=null;
+function download(filename,text,type='application/json'){
+  const url=URL.createObjectURL(new Blob([text],{type}));const link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function populate(){
+  const select=$('profile'),keep=select.value;
+  select.replaceChildren(...profiles.map(p=>{const o=element('option','',`${p.name} · ${p.assessments.length} avaliações`);o.value=p.profileId;return o}));
+  select.value=profiles.some(x=>x.profileId===keep)?keep:profiles[0].profileId;
+  $('goal').value=profiles.find(x=>x.profileId===select.value)?.goal||'acompanhar';
+  $('source-info').textContent=imported.length?'Arquivo local importado; não transmitido ou gravado em disco.':'Exemplos sintéticos; nenhuma pessoa real.';
+  $('clear').hidden=imported.length===0;
+  show();
+}
 function chart(metric,records,key){
-  const values=records.map(x=>x.metrics[key]).filter(v=>typeof v==='number');if(values.length<2)return h('p','','Dados insuficientes para gráfico.');
-  const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('viewBox','0 0 360 126');el.setAttribute('class','chart');el.setAttribute('role','img');el.setAttribute('aria-label',`Evolução demonstrativa de ${metric.title}`);
-  const min=Math.min(...values),max=Math.max(...values),spread=Math.max(.5,max-min),coords=values.map((v,i)=>[16+i*328/(values.length-1),110-(v-min)/spread*82]);
-  const mk=(name,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([a,v])=>n.setAttribute(a,String(v)));return n};
-  el.append(mk('line',{x1:16,y1:110,x2:344,y2:110,class:'gridline'}));el.append(mk('path',{d:coords.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}));for(const [x,y] of coords)el.append(mk('circle',{cx:x,cy:y,r:4}));return el;
+  if(!['preliminar','observado'].includes(metric.status))return element('p','',`Gráfico indisponível: ${metric.explanation}`);
+  const points=records.map(x=>({time:Date.parse(x.date+'T12:00:00Z'),value:x.metrics[key]}))
+    .filter(p=>Number.isFinite(p.time)&&typeof p.value==='number'&&Number.isFinite(p.value)).sort((a,b)=>a.time-b.time);
+  if(points.length<2)return element('p','','Dados insuficientes.');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 360 140');svg.classList.add('chart');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${metric.title}, valores entre ${fmt(metric.first)} e ${fmt(metric.last)}`);
+  const min=Math.min(...points.map(x=>x.value)),max=Math.max(...points.map(x=>x.value)),spread=Math.max(0.5,max-min),dateSpread=Math.max(1,points.at(-1).time-points[0].time);
+  const coords=points.map(p=>[18+(p.time-points[0].time)/dateSpread*324,113-(p.value-min)/spread*82]);
+  const mk=(name,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,String(v)));return n};
+  svg.append(mk('line',{x1:18,y1:113,x2:342,y2:113,class:'gridline'}));
+  svg.append(mk('path',{d:coords.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}));
+  for(const [x,y] of coords)svg.append(mk('circle',{cx:x,cy:y,r:4}));
+  return svg;
 }
-function show(){const selected=examples.find(p=>p.profileId===$('profile').value);if(!selected)return;const r=analyzeProfile({...selected,goal:$('goal').value});const host=$('results');host.replaceChildren();
-  const intro=h('section','card');const heading=h('div','heading');const title=h('div');title.append(h('div','eyebrow','PAINEL DE INTERPRETAÇÃO'),h('h2','',selected.name),h('p','',`${r.eligibility.assessments??selected.assessments.length} avaliações · ${r.eligibility.spanDays??'—'} dias de histórico · ${VERSION}`));heading.append(title,h('span','status',r.eligibility.eligible?'Análise disponível':'Análise limitada'));intro.append(heading,h('div','summary',r.summary));host.append(intro);
-  if(!r.eligibility.eligible){const block=h('section','card');block.append(h('h2','','Requisitos pendentes'),h('p','',r.alerts.map(x=>x.text).join(' ')));host.append(block);return}
-  const grid=h('section','metricgrid');for(const [key,definition] of Object.entries(METRIC_DEFINITIONS)){
-    const m=r.metrics[key],card=h('article','card metric');card.append(h('div','tag',definition.title));
-    card.append(h('div','value',m.last!==null?`${fmtNumber(m.last)} ${m.unit}`:'—'));
-    card.append(h('div','delta',m.delta!==null?`${m.delta>0?'+':''}${fmtNumber(m.delta)} ${m.unit}`:'Sem comparação'));
-    card.append(h('div','mini',m.status==='incomparavel'?'Métodos não comparáveis':m.status==='insuficiente'?'Medidas insuficientes':m.trend==='estavel'?'Variação pequena':m.trend==='aumento'?'Aumento observado':'Redução observada'));
-    card.append(h('p','detail',m.explanation));grid.append(card);
-  }host.append(grid);
-  const trendSection=h('section','charts');for(const key of ['weightKg','waistCm']){const m=r.metrics[key],card=h('article','card');const heading=h('div','charthead');heading.append(h('h2','',m.title),h('small','',m.status==='insuficiente'?'Sem série completa':`${m.n} medições`));card.append(heading,chart(m,selected.assessments,key));trendSection.append(card)}host.append(trendSection);
-  const alerts=h('section','card');const line=h('div','heading');line.append(h('h2','','Alertas e verificações'));const copy=h('button','copy','Copiar resultado JSON');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(JSON.stringify(r,null,2));copy.textContent='Copiado'}catch{copy.textContent='Cópia indisponível'}});line.append(copy);alerts.append(line);
-  const list=h('div','alerts');const items=[...r.quality.warnings,...r.alerts];if(!items.length)items.push({severity:'info',code:'NO_ALERTS',text:'Nenhuma inconsistência adicional foi identificada pelas regras deste motor. Isso não garante ausência de erro.'});for(const a of items){const item=h('div',`alert ${a.severity||''}`);item.append(h('b','',a.code.replaceAll('_',' ')),h('p','',a.text));list.append(item)}alerts.append(list);const note=h('ul','footnotes');for(const txt of r.limitations)note.append(h('li','',txt));alerts.append(note);host.append(alerts);
+function show(){
+  const profile=profiles.find(p=>p.profileId===$('profile').value);if(!profile)return;
+  const goal=$('goal').value;
+  const result=analyzeProfile({...profile,goal});current=result;
+  const host=$('results');host.replaceChildren();
+  const intro=element('section','card'),heading=element('div','heading'),headingText=element('div');
+  headingText.append(element('div','eyebrow','INTERPRETAÇÃO LOCAL'),element('h2','',profile.name),element('p','',`${result.eligibility.assessments??profile.assessments.length} avaliações · ${result.eligibility.spanDays??'—'} dias · núcleo ${VERSION}`));
+  heading.append(headingText,element('span','status',result.eligibility.eligible?'Análise disponível':'Análise limitada'));
+  intro.append(heading,element('div','summary',result.summary));host.append(intro);
+  if(result.eligibility.eligible){
+    const grid=element('section','metricgrid');
+    for(const [key,definition] of Object.entries(METRIC_DEFINITIONS)){
+      const m=result.metrics[key],card=element('article','card metric');card.append(element('div','tag',definition.title));
+      card.append(element('div','value',m.last!==null?`${fmt(m.last)} ${m.unit}`:'—'));
+      card.append(element('div','delta',m.delta!==null?`${m.delta>0?'+':''}${fmt(m.delta)} ${m.unit}`:'Sem comparação'));
+      card.append(element('div','mini',m.status==='incomparavel'?'Métodos incompatíveis':m.status==='insuficiente'?'Dados insuficientes':m.trend==='estavel'?'Variação pequena':m.trend==='aumento'?'Aumento':'Redução'));
+      card.append(element('p','detail',m.explanation));grid.append(card);
+    }
+    host.append(grid);
+    const charts=element('section','charts');for(const key of ['weightKg','waistCm']){
+      const m=result.metrics[key],box=element('article','card'),head=element('div','charthead');head.append(element('h2','',m.title),element('small','',`${m.n} medições`));box.append(head,chart(m,profile.assessments,key));charts.append(box);
+    }host.append(charts);
+  }
+  const alerts=element('section','card'),head=element('div','heading');head.append(element('h2','','Alertas e verificações'));
+  const exportButton=element('button','secondary','Exportar análise JSON');exportButton.type='button';exportButton.id='export-result';
+  exportButton.addEventListener('click',()=>download(`EFI-Analise-${profile.profileId.replace(/[^a-zA-Z0-9_-]/g,'_')}.json`,JSON.stringify(current,null,2)));
+  head.append(exportButton);alerts.append(head);
+  const list=element('div','alerts'),items=[...(result.quality?.warnings||[]),...(result.alerts||[])];
+  if(!items.length)items.push({severity:'info',code:'SEM_ALERTAS',text:'Nenhuma inconsistência adicional foi identificada pelas regras disponíveis.'});
+  for(const a of items){const card=element('article',`alert ${a.severity||''}`);card.append(element('b','',String(a.code).replaceAll('_',' ')),element('p','',a.text));list.append(card)}
+  alerts.append(list);
+  const note=element('ul','footnotes');for(const t of result.limitations||[])note.append(element('li','',t));alerts.append(note);host.append(alerts);
 }
-$('profile').replaceChildren(...examples.map(p=>{const o=h('option','',`${p.name} · ${p.assessments.length} avaliações`);o.value=p.profileId;return o}));
-$('profile').addEventListener('change',()=>{const p=examples.find(x=>x.profileId===$('profile').value);if(p)$('goal').value=p.goal;show()});$('goal').addEventListener('change',show);$('analyze').addEventListener('click',show);
-$('theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
-$('goal').value=examples[0].goal;show();
+function setStatus(message,isError=false){$('import-status').textContent=message;$('import-status').dataset.error=String(isError)}
+async function receiveFile(file){
+  if(!file){return}
+  if(file.size>MAX_FILE_BYTES){setStatus('Arquivo excede o limite de 1 MB.',true);return}
+  try{
+    const content=await file.text(),parsed=parseImportText(content);
+    imported=parsed.profiles;profiles=imported;
+    setStatus(`${imported.length} perfil(is) importado(s) exclusivamente na memória. Nada foi enviado para a internet.`);
+    populate();
+  }catch(e){setStatus(e instanceof ImportErrorEFI?`${e.code}: ${e.message}`:'Não foi possível abrir o arquivo.',true)}
+  finally{$('file').value=''}
+}
+function network(){const online=navigator.onLine;$('connection').textContent=online?'Conexão disponível':'Sem conexão · modo local';$('connection').dataset.online=String(online)}
+function init(){
+  $('profile').addEventListener('change',()=>{$('goal').value=profiles.find(p=>p.profileId===$('profile').value)?.goal||'acompanhar';show()});
+  $('goal').addEventListener('change',show);$('analyze').addEventListener('click',show);
+  $('file').addEventListener('change',e=>receiveFile(e.target.files?.[0]));
+  $('clear').addEventListener('click',()=>{imported=[];profiles=[...examples];setStatus('Importação descartada da memória. Exemplos demonstrativos restaurados.');populate()});
+  $('sample').addEventListener('click',()=>download('EFI-Modelo-Importacao.json',JSON.stringify(exampleImport(examples[0]),null,2)));
+  $('theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+  window.addEventListener('online',network);window.addEventListener('offline',network);
+  network();populate();
+  // Service Worker only on secure HTTP origins. The single-file build runs without it.
+  if('serviceWorker' in navigator && (location.protocol==='https:' || ['localhost','127.0.0.1'].includes(location.hostname)) && !location.pathname.endsWith('EFI_RC2_OFFLINE.html')){
+    navigator.serviceWorker.register('../sw.js',{scope:'../'}).then(()=>{$('offline-status').textContent='Aplicativo preparado para uso offline após armazenar os arquivos necessários neste navegador.'}).catch(()=>{});
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 
 </script>
 </body></html>

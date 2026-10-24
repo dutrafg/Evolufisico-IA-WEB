@@ -1,4 +1,4 @@
-name: EFI Core Tests
+name: EFI Web RC2 Tests
 on: [push, pull_request]
 jobs:
   test:
@@ -8,4 +8,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - run: npm test
+      - run: npm run build
+      - run: node --check efi-intelligence/analyzer.mjs
+      - run: node --check efi-intelligence/importer.mjs
+      - run: node --check efi-intelligence/app.mjs

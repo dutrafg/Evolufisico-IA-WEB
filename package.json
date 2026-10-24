@@ -1,9 +1,10 @@
 {
   "name": "evolufisico-ia-web",
-  "version": "0.1.1",
+  "version": "0.2.0-rc2",
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/efi-core.test.mjs"
+    "build": "python3 tools/build_standalone.py",
+    "test": "node --test tests/efi-core.test.mjs tests/efi-import.test.mjs"
   }
 }

@@ -1,27 +1,42 @@
-# EvoluFísico Intelligence — IA Web
+# EvoluFísico Intelligence Web — RC2 (experimental)
 
-Projeto independente para inteligência analítica e execução offline em navegadores Android e Windows. **Não faz parte do repositório Evolufisico2**.
-
-## Estado da publicação
-
-Base de desenvolvimento RC1.1 (experimental). O aplicativo analítico de demonstração não contém dados reais e funciona em um HTML único. O Gerenciador Offline possui um pacote de distribuição integral separado, incluindo o runtime ONNX WebAssembly. Os arquivos binários de grande porte ainda não fazem parte desta publicação do GitHub.
+Aplicativo **independente**. Repositório exclusivo: `dutrafg/Evolufisico-IA-WEB`.
+Não altera nem acessa o `Evolufisico2` automaticamente.
 
 ## Abrir
 
-- `index.html`: EFI Intelligence RC1.1, demonstração isolada com três alunos sintéticos; funciona aberto como arquivo local.
-- `efi-intelligence/index.html`: versão modular para navegador em HTTP(S).
-- `efi-intelligence/analyzer.mjs`: núcleo puro que valida históricos e gera indicadores e alertas descritivos.
+- `index.html` ou `EFI_RC2_OFFLINE.html`: arquivo único, pode abrir diretamente no Windows/Android, sem servidor.
+- `efi-intelligence/index.html`: versão modular para HTTPS ou localhost; PWA instalada pode trabalhar offline depois da primeira instalação completa do shell.
+- `manifest.webmanifest`, `sw.js`: cache apenas de arquivos do aplicativo, **não** de dados de alunos ou modelos grandes.
+
+## Novidades RC2
+
+- Importar até 100 perfis por JSON local no contrato `efi.import.v1` (máx. 1 MB; 500 avaliações por aluno).
+- Gerar exemplo do arquivo de importação.
+- Inspecionar métricas, alertas, consistência de técnicas e exportar resultados JSON.
+- Descartar os dados importados da memória da página.
+- Gráficos com datas reais de avaliação e supressão em séries não comparáveis.
+- Modo claro/escuro, visual responsivo, barra de status da conectividade.
+
+### Privacidade
+
+A importação **não** usa `fetch`, `IndexedDB`, cookies ou servidor. Os dados permanecem em memória até sair, recarregar ou descartar. Exports só ocorrem mediante clique. Evite importar informações pessoais em dispositivos compartilhados: conteúdo pode permanecer no navegador durante a sessão.
+
+**Atenção:** exportar análise salva resultados em arquivo no dispositivo do profissional. A salvaguarda desse arquivo é responsabilidade do usuário.
 
 ## Testes
 
-Execute `npm test` com Node.js 22 ou superior. O projeto não exige dependências NPM para testes de lógica. Android e Windows físicos requerem homologação adicional.
+Requer Node.js 22+ e Python 3 para gerar o HTML único:
 
-## Integração futura
+```bash
+npm test
+npm run build
+```
 
-A EFI poderá receber snapshots validados por um adaptador explícito. **Não importa dados automaticamente do Evolufisico2** e respeita bloqueios de auditoria daquele sistema. Nenhuma informação pessoal é transmitida para APIs externas pelo núcleo analítico.
+Testes de navegador Android/Windows físicos são pendentes. O núcleo é **determinístico** e não constitui um LLM treinado; nunca deve ser usado para emitir diagnóstico.
 
-## Limitações
+## Limites e integração
 
-O núcleo atual é determinístico; não é um modelo de linguagem próprio treinado. Ele não emite diagnósticos ou prescrições. Modelos ONNX de demonstração não têm validade clínica. `efi-offline/` estará disponível quando os arquivos do Gerenciador Offline forem publicados e validados nesta origem.
+O aplicativo aceita apenas o esquema EFI próprio; **não** importa automaticamente o banco interno de outro programa. A integração futura deve ser feita por um exportador específico, versionado e validado, quando autorizado.
 
-**Repositório:** https://github.com/dutrafg/Evolufisico-IA-WEB
+O Gerenciador Offline ONNX RC1 está sendo desenvolvido separadamente e seus arquivos binários ainda não estão nesta branch. O serviço de cache desta versão não instala modelos de IA.
