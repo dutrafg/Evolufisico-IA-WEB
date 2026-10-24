@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<meta name="theme-color" content="#eef3f5"/>
+<title>EvoluFísico Intelligence · Análise Especializada</title>
+<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar"><div class="brand"><span class="mark">EF</span><div><strong>EvoluFísico Intelligence</strong><small>ANÁLISE ESPECIALIZADA · RC1.1</small></div></div><button class="theme" id="theme" type="button" aria-label="Alternar modo claro e escuro">◐ <span>Tema</span></button></header>
+  <main>
+    <div class="intro"><div><div class="eyebrow">EFI / LABORATÓRIO EXPERIMENTAL</div><h1>Inteligência aplicada à evolução física</h1><p>Interpretação local, verificável e fundamentada nas medições. Nenhum dado é enviado a servidores.</p></div><div class="label">Demonstração local · arquivo único</div></div>
+    <section class="controls card" aria-label="Seleção de perfil"><div><label for="profile">Aluno demonstrativo</label><select id="profile"></select><small>Todos os perfis têm no mínimo três avaliações distintas.</small></div><div><label for="goal">Objetivo do acompanhamento</label><select id="goal"><option value="acompanhar">Acompanhar evolução</option><option value="reduzir-cintura">Reduzir cintura</option><option value="reduzir-gordura">Reduzir gordura</option><option value="aumentar-massa-livre">Aumentar massa livre</option></select><small>A meta só muda os alertas descritivos.</small></div><button type="button" id="analyze" class="primary">Analisar evolução</button></section>
+    <div class="results" id="results" aria-live="polite"><p>Selecione um perfil e execute a análise.</p></div>
+    <div class="legal">Motor analítico determinístico · Sem modelo de linguagem · Não constitui diagnóstico médico, prescrição de exercícios ou garantia de acurácia clínica. Revisão do profissional obrigatória.</div>
+  </main>
+</div>
+<script type="module" src="./app.mjs"></script>
+</body></html>

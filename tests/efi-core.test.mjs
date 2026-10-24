@@ -1,0 +1,17 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {analyzeProfile,analyzeFromEFIA,SCHEMA_VERSION} from '../efi-intelligence/analyzer.mjs';
+import {examples} from '../efi-intelligence/fixtures.mjs';
+const clone=x=>structuredClone(x);
+test('versão e exemplos coerentes',()=>{assert.equal(SCHEMA_VERSION,'efi.intelligence.v1');assert.equal(examples.length,3);for(const e of examples)assert.equal(analyzeProfile(e).eligibility.eligible,true)});
+test('Carlos: cálculo longitudinal',()=>{const x=analyzeProfile(examples[0]);assert.equal(x.metrics.weightKg.delta,-3.7);assert.equal(x.metrics.bodyFatPct.delta,-2.9)});
+test('Marina: Pollock e BIA não comparáveis',()=>{const x=analyzeProfile(examples[2]);assert.equal(x.metrics.bodyFatPct.delta,null);assert.equal(x.metrics.bodyFatPct.status,'incomparavel')});
+test('Identidades misturadas bloqueiam',()=>{const e=clone(examples[0]);e.assessments[2].studentId='OUTRO';assert.equal(analyzeProfile(e).eligibility.reason,'IDENTITY_MISMATCH')});
+test('Poucas avaliações bloqueiam',()=>{const e=clone(examples[0]);e.assessments=e.assessments.slice(0,2);assert.equal(analyzeProfile(e).eligibility.reason,'MINIMUM_ASSESSMENTS')});
+test('Intervalo curto bloqueia',()=>{const e=clone(examples[1]);e.assessments[1].date='2026-05-18';e.assessments[2].date='2026-05-20';assert.equal(analyzeProfile(e).eligibility.reason,'MINIMUM_SPAN')});
+test('Datas repetidas bloqueiam',()=>{const e=clone(examples[0]);e.assessments[2].date=e.assessments[1].date;assert.equal(analyzeProfile(e).eligibility.reason,'INVALID_DATE')});
+test('Massa livre superior ao peso interrompe comparação',()=>{const e=clone(examples[0]);e.assessments[2].metrics.leanMassKg=150;const x=analyzeProfile(e);assert.equal(x.metrics.leanMassKg.delta,null)});
+test('Sem meta declarada não assume direção desejável',()=>{const e=clone(examples[0]);delete e.goal;assert.equal(analyzeProfile(e).alerts.some(x=>x.code==='GOAL_DIRECTION'),false)});
+test('Snapshot de entrada permanece imutável',()=>{const e=clone(examples[0]);const before=clone(e);analyzeProfile(e);assert.deepEqual(e,before)});
+test('EFIA pode bloquear resultados',()=>{const e=clone(examples[0]);e.sourceEligibility=false;assert.equal(analyzeProfile(e).eligibility.reason,'SOURCE_BLOCKED')});
+test('10.000 séries sintéticas não retornam NaN',()=>{let seed=7919;const rnd=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return (seed>>>0)/4294967296};for(let i=0;i<10000;i++){const e=clone(examples[i%3]);e.profileId='S'+i; e.assessments=e.assessments.map((a,j)=>({...a,id:i+'-'+j,studentId:e.profileId,metrics:{...a.metrics,weightKg:Math.round((60+rnd()*40)*10)/10}}));const r=analyzeProfile(e);for(const m of Object.values(r.metrics))for(const key of ['delta','ratePer30Days','percentChange'])assert.ok(m[key]===null||Number.isFinite(m[key]))}});
