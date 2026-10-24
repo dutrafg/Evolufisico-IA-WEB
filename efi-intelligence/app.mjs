@@ -1,31 +1,99 @@
 import {analyzeProfile,METRIC_DEFINITIONS,VERSION} from './analyzer.mjs';
 import {examples} from './fixtures.mjs';
-const $=id=>document.getElementById(id);
-const h=(tag,className='',text='')=>{const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=String(text);return el};
-const fmtNumber=n=>typeof n==='number'&&Number.isFinite(n)?new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n):'—';
+import {parseImportText,MAX_FILE_BYTES,ImportErrorEFI,exampleImport} from './importer.mjs';
+const $ = id => document.getElementById(id);
+const element = (tag, className='', content='') => {
+  const node=document.createElement(tag);if(className)node.className=className;
+  node.textContent=String(content);return node;
+};
+const fmt = n => Number.isFinite(n)?new Intl.NumberFormat('pt-BR',{maximumFractionDigits:2}).format(n):'—';
+let imported=[];
+let profiles=[...examples];
+let current=null;
+function download(filename,text,type='application/json'){
+  const url=URL.createObjectURL(new Blob([text],{type}));const link=document.createElement('a');link.href=url;link.download=filename;link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);
+}
+function populate(){
+  const select=$('profile'),keep=select.value;
+  select.replaceChildren(...profiles.map(p=>{const o=element('option','',`${p.name} · ${p.assessments.length} avaliações`);o.value=p.profileId;return o}));
+  select.value=profiles.some(x=>x.profileId===keep)?keep:profiles[0].profileId;
+  $('goal').value=profiles.find(x=>x.profileId===select.value)?.goal||'acompanhar';
+  $('source-info').textContent=imported.length?'Arquivo local importado; não transmitido ou gravado em disco.':'Exemplos sintéticos; nenhuma pessoa real.';
+  $('clear').hidden=imported.length===0;
+  show();
+}
 function chart(metric,records,key){
-  const values=records.map(x=>x.metrics[key]).filter(v=>typeof v==='number');if(values.length<2)return h('p','','Dados insuficientes para gráfico.');
-  const el=document.createElementNS('http://www.w3.org/2000/svg','svg');el.setAttribute('viewBox','0 0 360 126');el.setAttribute('class','chart');el.setAttribute('role','img');el.setAttribute('aria-label',`Evolução demonstrativa de ${metric.title}`);
-  const min=Math.min(...values),max=Math.max(...values),spread=Math.max(.5,max-min),coords=values.map((v,i)=>[16+i*328/(values.length-1),110-(v-min)/spread*82]);
-  const mk=(name,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([a,v])=>n.setAttribute(a,String(v)));return n};
-  el.append(mk('line',{x1:16,y1:110,x2:344,y2:110,class:'gridline'}));el.append(mk('path',{d:coords.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}));for(const [x,y] of coords)el.append(mk('circle',{cx:x,cy:y,r:4}));return el;
+  if(!['preliminar','observado'].includes(metric.status))return element('p','',`Gráfico indisponível: ${metric.explanation}`);
+  const points=records.map(x=>({time:Date.parse(x.date+'T12:00:00Z'),value:x.metrics[key]}))
+    .filter(p=>Number.isFinite(p.time)&&typeof p.value==='number'&&Number.isFinite(p.value)).sort((a,b)=>a.time-b.time);
+  if(points.length<2)return element('p','','Dados insuficientes.');
+  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 360 140');svg.classList.add('chart');svg.setAttribute('role','img');svg.setAttribute('aria-label',`${metric.title}, valores entre ${fmt(metric.first)} e ${fmt(metric.last)}`);
+  const min=Math.min(...points.map(x=>x.value)),max=Math.max(...points.map(x=>x.value)),spread=Math.max(0.5,max-min),dateSpread=Math.max(1,points.at(-1).time-points[0].time);
+  const coords=points.map(p=>[18+(p.time-points[0].time)/dateSpread*324,113-(p.value-min)/spread*82]);
+  const mk=(name,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,String(v)));return n};
+  svg.append(mk('line',{x1:18,y1:113,x2:342,y2:113,class:'gridline'}));
+  svg.append(mk('path',{d:coords.map(([x,y],i)=>`${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ')}));
+  for(const [x,y] of coords)svg.append(mk('circle',{cx:x,cy:y,r:4}));
+  return svg;
 }
-function show(){const selected=examples.find(p=>p.profileId===$('profile').value);if(!selected)return;const r=analyzeProfile({...selected,goal:$('goal').value});const host=$('results');host.replaceChildren();
-  const intro=h('section','card');const heading=h('div','heading');const title=h('div');title.append(h('div','eyebrow','PAINEL DE INTERPRETAÇÃO'),h('h2','',selected.name),h('p','',`${r.eligibility.assessments??selected.assessments.length} avaliações · ${r.eligibility.spanDays??'—'} dias de histórico · ${VERSION}`));heading.append(title,h('span','status',r.eligibility.eligible?'Análise disponível':'Análise limitada'));intro.append(heading,h('div','summary',r.summary));host.append(intro);
-  if(!r.eligibility.eligible){const block=h('section','card');block.append(h('h2','','Requisitos pendentes'),h('p','',r.alerts.map(x=>x.text).join(' ')));host.append(block);return}
-  const grid=h('section','metricgrid');for(const [key,definition] of Object.entries(METRIC_DEFINITIONS)){
-    const m=r.metrics[key],card=h('article','card metric');card.append(h('div','tag',definition.title));
-    card.append(h('div','value',m.last!==null?`${fmtNumber(m.last)} ${m.unit}`:'—'));
-    card.append(h('div','delta',m.delta!==null?`${m.delta>0?'+':''}${fmtNumber(m.delta)} ${m.unit}`:'Sem comparação'));
-    card.append(h('div','mini',m.status==='incomparavel'?'Métodos não comparáveis':m.status==='insuficiente'?'Medidas insuficientes':m.trend==='estavel'?'Variação pequena':m.trend==='aumento'?'Aumento observado':'Redução observada'));
-    card.append(h('p','detail',m.explanation));grid.append(card);
-  }host.append(grid);
-  const trendSection=h('section','charts');for(const key of ['weightKg','waistCm']){const m=r.metrics[key],card=h('article','card');const heading=h('div','charthead');heading.append(h('h2','',m.title),h('small','',m.status==='insuficiente'?'Sem série completa':`${m.n} medições`));card.append(heading,chart(m,selected.assessments,key));trendSection.append(card)}host.append(trendSection);
-  const alerts=h('section','card');const line=h('div','heading');line.append(h('h2','','Alertas e verificações'));const copy=h('button','copy','Copiar resultado JSON');copy.type='button';copy.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(JSON.stringify(r,null,2));copy.textContent='Copiado'}catch{copy.textContent='Cópia indisponível'}});line.append(copy);alerts.append(line);
-  const list=h('div','alerts');const items=[...r.quality.warnings,...r.alerts];if(!items.length)items.push({severity:'info',code:'NO_ALERTS',text:'Nenhuma inconsistência adicional foi identificada pelas regras deste motor. Isso não garante ausência de erro.'});for(const a of items){const item=h('div',`alert ${a.severity||''}`);item.append(h('b','',a.code.replaceAll('_',' ')),h('p','',a.text));list.append(item)}alerts.append(list);const note=h('ul','footnotes');for(const txt of r.limitations)note.append(h('li','',txt));alerts.append(note);host.append(alerts);
+function show(){
+  const profile=profiles.find(p=>p.profileId===$('profile').value);if(!profile)return;
+  const goal=$('goal').value;
+  const result=analyzeProfile({...profile,goal});current=result;
+  const host=$('results');host.replaceChildren();
+  const intro=element('section','card'),heading=element('div','heading'),headingText=element('div');
+  headingText.append(element('div','eyebrow','INTERPRETAÇÃO LOCAL'),element('h2','',profile.name),element('p','',`${result.eligibility.assessments??profile.assessments.length} avaliações · ${result.eligibility.spanDays??'—'} dias · núcleo ${VERSION}`));
+  heading.append(headingText,element('span','status',result.eligibility.eligible?'Análise disponível':'Análise limitada'));
+  intro.append(heading,element('div','summary',result.summary));host.append(intro);
+  if(result.eligibility.eligible){
+    const grid=element('section','metricgrid');
+    for(const [key,definition] of Object.entries(METRIC_DEFINITIONS)){
+      const m=result.metrics[key],card=element('article','card metric');card.append(element('div','tag',definition.title));
+      card.append(element('div','value',m.last!==null?`${fmt(m.last)} ${m.unit}`:'—'));
+      card.append(element('div','delta',m.delta!==null?`${m.delta>0?'+':''}${fmt(m.delta)} ${m.unit}`:'Sem comparação'));
+      card.append(element('div','mini',m.status==='incomparavel'?'Métodos incompatíveis':m.status==='insuficiente'?'Dados insuficientes':m.trend==='estavel'?'Variação pequena':m.trend==='aumento'?'Aumento':'Redução'));
+      card.append(element('p','detail',m.explanation));grid.append(card);
+    }
+    host.append(grid);
+    const charts=element('section','charts');for(const key of ['weightKg','waistCm']){
+      const m=result.metrics[key],box=element('article','card'),head=element('div','charthead');head.append(element('h2','',m.title),element('small','',`${m.n} medições`));box.append(head,chart(m,profile.assessments,key));charts.append(box);
+    }host.append(charts);
+  }
+  const alerts=element('section','card'),head=element('div','heading');head.append(element('h2','','Alertas e verificações'));
+  const exportButton=element('button','secondary','Exportar análise JSON');exportButton.type='button';exportButton.id='export-result';
+  exportButton.addEventListener('click',()=>download(`EFI-Analise-${profile.profileId.replace(/[^a-zA-Z0-9_-]/g,'_')}.json`,JSON.stringify(current,null,2)));
+  head.append(exportButton);alerts.append(head);
+  const list=element('div','alerts'),items=[...(result.quality?.warnings||[]),...(result.alerts||[])];
+  if(!items.length)items.push({severity:'info',code:'SEM_ALERTAS',text:'Nenhuma inconsistência adicional foi identificada pelas regras disponíveis.'});
+  for(const a of items){const card=element('article',`alert ${a.severity||''}`);card.append(element('b','',String(a.code).replaceAll('_',' ')),element('p','',a.text));list.append(card)}
+  alerts.append(list);
+  const note=element('ul','footnotes');for(const t of result.limitations||[])note.append(element('li','',t));alerts.append(note);host.append(alerts);
 }
-$('profile').replaceChildren(...examples.map(p=>{const o=h('option','',`${p.name} · ${p.assessments.length} avaliações`);o.value=p.profileId;return o}));
-$('profile').addEventListener('change',()=>{const p=examples.find(x=>x.profileId===$('profile').value);if(p)$('goal').value=p.goal;show()});$('goal').addEventListener('change',show);$('analyze').addEventListener('click',show);
-$('theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
-$('goal').value=examples[0].goal;show();
-
+function setStatus(message,isError=false){$('import-status').textContent=message;$('import-status').dataset.error=String(isError)}
+async function receiveFile(file){
+  if(!file){return}
+  if(file.size>MAX_FILE_BYTES){setStatus('Arquivo excede o limite de 1 MB.',true);return}
+  try{
+    const content=await file.text(),parsed=parseImportText(content);
+    imported=parsed.profiles;profiles=imported;
+    setStatus(`${imported.length} perfil(is) importado(s) exclusivamente na memória. Nada foi enviado para a internet.`);
+    populate();
+  }catch(e){setStatus(e instanceof ImportErrorEFI?`${e.code}: ${e.message}`:'Não foi possível abrir o arquivo.',true)}
+  finally{$('file').value=''}
+}
+function network(){const online=navigator.onLine;$('connection').textContent=online?'Conexão disponível':'Sem conexão · modo local';$('connection').dataset.online=String(online)}
+function init(){
+  $('profile').addEventListener('change',()=>{$('goal').value=profiles.find(p=>p.profileId===$('profile').value)?.goal||'acompanhar';show()});
+  $('goal').addEventListener('change',show);$('analyze').addEventListener('click',show);
+  $('file').addEventListener('change',e=>receiveFile(e.target.files?.[0]));
+  $('clear').addEventListener('click',()=>{imported=[];profiles=[...examples];setStatus('Importação descartada da memória. Exemplos demonstrativos restaurados.');populate()});
+  $('sample').addEventListener('click',()=>download('EFI-Modelo-Importacao.json',JSON.stringify(exampleImport(examples[0]),null,2)));
+  $('theme').addEventListener('click',()=>{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'});
+  window.addEventListener('online',network);window.addEventListener('offline',network);
+  network();populate();
+  // Service Worker only on secure HTTP origins. The single-file build runs without it.
+  if('serviceWorker' in navigator && (location.protocol==='https:' || ['localhost','127.0.0.1'].includes(location.hostname)) && !location.pathname.endsWith('EFI_RC2_OFFLINE.html')){
+    navigator.serviceWorker.register('../sw.js',{scope:'../'}).then(()=>{$('offline-status').textContent='Aplicativo preparado para uso offline após armazenar os arquivos necessários neste navegador.'}).catch(()=>{});
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();

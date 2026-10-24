@@ -1,0 +1,12 @@
+{
+  "name": "EvoluFísico Intelligence Web",
+  "short_name": "EFI Web",
+  "id": "./efi-intelligence/",
+  "start_url": "./efi-intelligence/",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eff2f4",
+  "theme_color": "#176a62",
+  "lang": "pt-BR",
+  "icons": [{"src":"./efi-icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
